@@ -1,0 +1,12 @@
+[project]
+name = "tickethub-qa"
+version = "1.0.0"
+description = "SQT Practical Project Test 1 - TicketHub QA package"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["perf: non-functional timing smoke checks"]
+xfail_strict = true

@@ -1,0 +1,55 @@
+digraph CEG {
+  rankdir=LR; bgcolor="white"; pad=0.3; nodesep=0.18; ranksep=1.0;
+  node [fontname="Helvetica", fontsize=11];
+  edge [arrowsize=0.6, color="#404040"];
+
+  // Causes
+  C1 [shape=circle, width=0.55, fixedsize=true, label="C1"];
+  C2 [shape=circle, width=0.55, fixedsize=true, label="C2"];
+  C3 [shape=circle, width=0.55, fixedsize=true, label="C3"];
+  C4 [shape=circle, width=0.55, fixedsize=true, label="C4"];
+  C5 [shape=circle, width=0.55, fixedsize=true, label="C5"];
+
+  // Intermediate nodes
+  I1 [shape=circle, width=0.55, fixedsize=true, style=filled, fillcolor="#EEF3FA", label="I1"];
+  I2 [shape=circle, width=0.55, fixedsize=true, style=filled, fillcolor="#EEF3FA", label="I2\n∧"];
+  I3 [shape=circle, width=0.55, fixedsize=true, style=filled, fillcolor="#EEF3FA", label="I3\n∧"];
+
+  C5 -> I1;
+  C5 -> I2 [style=dashed, color="#C00000"]; C4 -> I2;
+  C5 -> I3 [style=dashed, color="#C00000"]; C4 -> I3 [style=dashed, color="#C00000"];
+
+  // Rule AND nodes
+  node [shape=box, style="rounded,filled", fillcolor="#FFF2CC", width=0.7, height=0.32, fontsize=10];
+  R1 [label="R1 ∧"]; R2 [label="R2 ∧"]; R3 [label="R3 ∧"];
+  R4 [label="R4 ∧"]; R5 [label="R5 ∧"]; R6 [label="R6 ∧"];
+  R7 [label="R7 ∧"]; R8 [label="R8 ∧"]; R9 [label="R9 ∧"];
+  C1 -> R1; I1 -> R1;   C1 -> R2; I2 -> R2;   C1 -> R3; I3 -> R3;
+  C2 -> R4; I1 -> R4;   C2 -> R5; I2 -> R5;   C2 -> R6; I3 -> R6;
+  C3 -> R7; I1 -> R7;   C3 -> R8; I2 -> R8;   C3 -> R9; I3 -> R9;
+
+  // Effects (OR where two rules give the same rate)
+  node [shape=box, style="rounded,filled", fillcolor="#E2EFDA", fontsize=11, width=1.3, height=0.36];
+  E1 [label="E1  rate 25%  (∨, cap)"]; E2 [label="E2  rate 20%  (∨)"]; E3 [label="E3  rate 15%"];
+  E4 [label="E4  rate 10%  (∨)"]; E5 [label="E5  rate 5%"]; E6 [label="E6  rate 0%"];
+  R1 -> E1 [color="#C55A11", penwidth=1.6]; R2 -> E1;
+  R3 -> E2; R4 -> E2; R5 -> E3; R6 -> E4; R7 -> E4; R8 -> E5; R9 -> E6;
+
+  // Constraint O: exactly one of C1, C2, C3
+  O [shape=box, style="dashed,rounded", color="#7030A0", fontcolor="#7030A0", fontsize=10, width=0.3, label="O"];
+  O -> C1 [style=dotted, arrowhead=none, color="#7030A0"];
+  O -> C2 [style=dotted, arrowhead=none, color="#7030A0"];
+  O -> C3 [style=dotted, arrowhead=none, color="#7030A0"];
+
+  legend [shape=note, style=filled, fillcolor="#FFFFFF", color="#999999", fontsize=10, label=
+"C1 type = STUDENT     C2 type = STAFF     C3 type = PUBLIC\l\
+C4 quantity >= 5      C5 promo code = SAVE10 (valid)\l\
+I1 = C5                       additional 10% (promo)\l\
+I2 = NOT C5 AND C4            additional 5% (bulk)\l\
+I3 = NOT C5 AND NOT C4        additional 0%\l\
+Rk = type cause AND Ik  (one node per collapsed decision-table rule)\l\
+E1 = R1 OR R2: R1 20%+10%=30% is cut to 25% by the cap (orange); R2 20%+5% = 25% exactly\l\
+Red dashed edge = NOT.   O = exactly one of C1..C3 is true (REQ-F2)\l\
+I1 and I2 are mutually exclusive by construction: promo and bulk never combine\l"];
+  { rank=sink; legend; }
+}

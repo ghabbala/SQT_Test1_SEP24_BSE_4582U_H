@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="24" skipped="0" tests="74" time="0.401" timestamp="2026-10-13T11:53:51.028142+03:00" hostname="DESKTOP-MOHJHJ9"><testcase classname="tests.test_nonfunctional" name="test_TC_71_latency_smoke_p95" time="0.146" /><testcase classname="tests.test_nonfunctional" name="test_TC_72_error_message_names_field[TC-72a-msg-quantity]" time="0.001" /><testcase classname="tests.test_nonfunctional" name="test_TC_72_error_message_names_field[TC-72b-msg-customer-type]" time="0.001" /><testcase classname="tests.test_nonfunctional" name="test_TC_72_error_message_names_field[TC-72c-msg-promo]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_TC_42_new_order_starts_created" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_TC_43_invalid_order_not_created" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_valid_transitions[TC-44-CREATED-pay]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_valid_transitions[TC-45-CREATED-cancel]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_valid_transitions[TC-46-PAID-cancel]" time="0.001"><failure message="AssertionError: TC-46 REQ-F7: PAID --cancel--&gt; expected REFUND_PENDING, got CANCELLED&#10;assert 'CANCELLED' == 'REFUND_PENDING'&#10;  &#10;  - REFUND_PENDING&#10;  + CANCELLED">request = &lt;FixtureRequest for &lt;Function test_valid_transitions[TC-46-PAID-cancel]&gt;&gt;
+start = 'PAID', event = 'cancel', end = 'REFUND_PENDING'
+
+    @pytest.mark.parametrize("start,event,end", [
+        P("CREATED", "pay", "PAID", id="TC-44-CREATED-pay"),
+        P("CREATED", "cancel", "CANCELLED", id="TC-45-CREATED-cancel"),
+        P("PAID", "cancel", "REFUND_PENDING", id="TC-46-PAID-cancel"),
+        P("PAID", "collect", "COLLECTED", id="TC-47-PAID-collect"),
+        P("REFUND_PENDING", "complete_refund", "REFUNDED", id="TC-48-REFUND_PENDING-complete_refund"),
+    ])
+    def test_valid_transitions(request, start, event, end):
+        """All valid transitions from the REQ-F7 table."""
+        tc = request.node.callspec.id[:5]
+        o = order_in(start, tc)
+        getattr(o, event)()
+&gt;       assert o.state == end, f"{tc} REQ-F7: {start} --{event}--&gt; expected {end}, got {o.state}"
+E       AssertionError: TC-46 REQ-F7: PAID --cancel--&gt; expected REFUND_PENDING, got CANCELLED
+E       assert 'CANCELLED' == 'REFUND_PENDING'
+E         
+E         - REFUND_PENDING
+E         + CANCELLED
+
+tests\test_order_lifecycle.py:75: AssertionError</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_valid_transitions[TC-47-PAID-collect]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_valid_transitions[TC-48-REFUND_PENDING-complete_refund]" time="0.001"><failure message="AssertionError: TC-48 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED&#10;assert 'CANCELLED' == 'REFUND_PENDING'&#10;  &#10;  - REFUND_PENDING&#10;  + CANCELLED">request = &lt;FixtureRequest for &lt;Function test_valid_transitions[TC-48-REFUND_PENDING-complete_refund]&gt;&gt;
+start = 'REFUND_PENDING', event = 'complete_refund', end = 'REFUNDED'
+
+    @pytest.mark.parametrize("start,event,end", [
+        P("CREATED", "pay", "PAID", id="TC-44-CREATED-pay"),
+        P("CREATED", "cancel", "CANCELLED", id="TC-45-CREATED-cancel"),
+        P("PAID", "cancel", "REFUND_PENDING", id="TC-46-PAID-cancel"),
+        P("PAID", "collect", "COLLECTED", id="TC-47-PAID-collect"),
+        P("REFUND_PENDING", "complete_refund", "REFUNDED", id="TC-48-REFUND_PENDING-complete_refund"),
+    ])
+    def test_valid_transitions(request, start, event, end):
+        """All valid transitions from the REQ-F7 table."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUND_PENDING', tc = 'TC-48'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+                pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+&gt;       assert o.state == state, (
+            f"{tc} BLOCKED: precondition failed - path {PATH[state]} should reach "
+            f"{state}, order is in {o.state}")
+E       AssertionError: TC-48 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED
+E       assert 'CANCELLED' == 'REFUND_PENDING'
+E         
+E         - REFUND_PENDING
+E         + CANCELLED
+
+tests\test_order_lifecycle.py:42: AssertionError</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-49-CREATED-collect]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-50-CREATED-complete_refund]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-51-PAID-pay]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-52-PAID-complete_refund]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-53-COLLECTED-pay]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-54-COLLECTED-cancel]" time="0.001"><failure message="Failed: DID NOT RAISE InvalidTransitionError">request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-54-COLLECTED-cancel]&gt;&gt;
+start = 'COLLECTED', event = 'cancel'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+        o = order_in(start, tc)
+&gt;       with pytest.raises(InvalidTransitionError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidTransitionError
+
+tests\test_order_lifecycle.py:98: Failed</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-55-COLLECTED-collect]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-56-COLLECTED-complete_refund]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-57-REFUND_PENDING-pay]" time="0.001"><failure message="AssertionError: TC-57 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED&#10;assert 'CANCELLED' == 'REFUND_PENDING'&#10;  &#10;  - REFUND_PENDING&#10;  + CANCELLED">request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-57-REFUND_PENDING-pay]&gt;&gt;
+start = 'REFUND_PENDING', event = 'pay'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUND_PENDING', tc = 'TC-57'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+                pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+&gt;       assert o.state == state, (
+            f"{tc} BLOCKED: precondition failed - path {PATH[state]} should reach "
+            f"{state}, order is in {o.state}")
+E       AssertionError: TC-57 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED
+E       assert 'CANCELLED' == 'REFUND_PENDING'
+E         
+E         - REFUND_PENDING
+E         + CANCELLED
+
+tests\test_order_lifecycle.py:42: AssertionError</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-58-REFUND_PENDING-cancel]" time="0.001"><failure message="AssertionError: TC-58 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED&#10;assert 'CANCELLED' == 'REFUND_PENDING'&#10;  &#10;  - REFUND_PENDING&#10;  + CANCELLED">request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-58-REFUND_PENDING-cancel]&gt;&gt;
+start = 'REFUND_PENDING', event = 'cancel'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUND_PENDING', tc = 'TC-58'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+                pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+&gt;       assert o.state == state, (
+            f"{tc} BLOCKED: precondition failed - path {PATH[state]} should reach "
+            f"{state}, order is in {o.state}")
+E       AssertionError: TC-58 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED
+E       assert 'CANCELLED' == 'REFUND_PENDING'
+E         
+E         - REFUND_PENDING
+E         + CANCELLED
+
+tests\test_order_lifecycle.py:42: AssertionError</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-59-REFUND_PENDING-collect]" time="0.001"><failure message="AssertionError: TC-59 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED&#10;assert 'CANCELLED' == 'REFUND_PENDING'&#10;  &#10;  - REFUND_PENDING&#10;  + CANCELLED">request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-59-REFUND_PENDING-collect]&gt;&gt;
+start = 'REFUND_PENDING', event = 'collect'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUND_PENDING', tc = 'TC-59'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+                pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+&gt;       assert o.state == state, (
+            f"{tc} BLOCKED: precondition failed - path {PATH[state]} should reach "
+            f"{state}, order is in {o.state}")
+E       AssertionError: TC-59 BLOCKED: precondition failed - path ['pay', 'cancel'] should reach REFUND_PENDING, order is in CANCELLED
+E       assert 'CANCELLED' == 'REFUND_PENDING'
+E         
+E         - REFUND_PENDING
+E         + CANCELLED
+
+tests\test_order_lifecycle.py:42: AssertionError</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-60-REFUNDED-pay]" time="0.001"><failure message="Failed: TC-60 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)">state = 'REFUNDED', tc = 'TC-60'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+&gt;               getattr(o, ev)()
+
+tests\test_order_lifecycle.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\tickethub.py:90: in complete_refund
+    self._fire("complete_refund")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;tickethub.Order object at 0x000001D44B2D22B0&gt;, event = 'complete_refund'
+
+    def _fire(self, event):
+        key = (self.state, event)
+        if key not in _TRANSITIONS:
+&gt;           raise InvalidTransitionError(f"'{event}' not allowed in state {self.state}")
+E           tickethub.InvalidTransitionError: 'complete_refund' not allowed in state CANCELLED
+
+src\tickethub.py:77: InvalidTransitionError
+
+During handling of the above exception, another exception occurred:
+
+request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-60-REFUNDED-pay]&gt;&gt;
+start = 'REFUNDED', event = 'pay'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUNDED', tc = 'TC-60'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+&gt;               pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+E               Failed: TC-60 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)
+
+tests\test_order_lifecycle.py:40: Failed</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-61-REFUNDED-cancel]" time="0.001"><failure message="Failed: TC-61 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)">state = 'REFUNDED', tc = 'TC-61'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+&gt;               getattr(o, ev)()
+
+tests\test_order_lifecycle.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\tickethub.py:90: in complete_refund
+    self._fire("complete_refund")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;tickethub.Order object at 0x000001D44B2CADF0&gt;, event = 'complete_refund'
+
+    def _fire(self, event):
+        key = (self.state, event)
+        if key not in _TRANSITIONS:
+&gt;           raise InvalidTransitionError(f"'{event}' not allowed in state {self.state}")
+E           tickethub.InvalidTransitionError: 'complete_refund' not allowed in state CANCELLED
+
+src\tickethub.py:77: InvalidTransitionError
+
+During handling of the above exception, another exception occurred:
+
+request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-61-REFUNDED-cancel]&gt;&gt;
+start = 'REFUNDED', event = 'cancel'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUNDED', tc = 'TC-61'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+&gt;               pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+E               Failed: TC-61 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)
+
+tests\test_order_lifecycle.py:40: Failed</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-62-REFUNDED-collect]" time="0.001"><failure message="Failed: TC-62 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)">state = 'REFUNDED', tc = 'TC-62'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+&gt;               getattr(o, ev)()
+
+tests\test_order_lifecycle.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\tickethub.py:90: in complete_refund
+    self._fire("complete_refund")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;tickethub.Order object at 0x000001D44B2CB1B0&gt;, event = 'complete_refund'
+
+    def _fire(self, event):
+        key = (self.state, event)
+        if key not in _TRANSITIONS:
+&gt;           raise InvalidTransitionError(f"'{event}' not allowed in state {self.state}")
+E           tickethub.InvalidTransitionError: 'complete_refund' not allowed in state CANCELLED
+
+src\tickethub.py:77: InvalidTransitionError
+
+During handling of the above exception, another exception occurred:
+
+request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-62-REFUNDED-collect]&gt;&gt;
+start = 'REFUNDED', event = 'collect'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUNDED', tc = 'TC-62'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+&gt;               pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+E               Failed: TC-62 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)
+
+tests\test_order_lifecycle.py:40: Failed</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-63-REFUNDED-complete_refund]" time="0.001"><failure message="Failed: TC-63 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)">state = 'REFUNDED', tc = 'TC-63'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+&gt;               getattr(o, ev)()
+
+tests\test_order_lifecycle.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\tickethub.py:90: in complete_refund
+    self._fire("complete_refund")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;tickethub.Order object at 0x000001D44B2C6CC0&gt;, event = 'complete_refund'
+
+    def _fire(self, event):
+        key = (self.state, event)
+        if key not in _TRANSITIONS:
+&gt;           raise InvalidTransitionError(f"'{event}' not allowed in state {self.state}")
+E           tickethub.InvalidTransitionError: 'complete_refund' not allowed in state CANCELLED
+
+src\tickethub.py:77: InvalidTransitionError
+
+During handling of the above exception, another exception occurred:
+
+request = &lt;FixtureRequest for &lt;Function test_invalid_transitions_rejected[TC-63-REFUNDED-complete_refund]&gt;&gt;
+start = 'REFUNDED', event = 'complete_refund'
+
+    @pytest.mark.parametrize("start,event", INVALID_PARAMS)
+    def test_invalid_transitions_rejected(request, start, event):
+        """Every other state/event pair raises InvalidTransitionError and leaves the state unchanged."""
+        tc = request.node.callspec.id[:5]
+&gt;       o = order_in(start, tc)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests\test_order_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = 'REFUNDED', tc = 'TC-63'
+
+    def order_in(state, tc):
+        o = Order(2, "PUBLIC")
+        for ev in PATH[state]:
+            try:
+                getattr(o, ev)()
+            except InvalidTransitionError as exc:
+&gt;               pytest.fail(f"{tc} BLOCKED: precondition failed - legal path {PATH[state]} "
+                            f"to {state} was rejected at '{ev}' in state {o.state} ({exc})")
+E               Failed: TC-63 BLOCKED: precondition failed - legal path ['pay', 'cancel', 'complete_refund'] to REFUNDED was rejected at 'complete_refund' in state CANCELLED ('complete_refund' not allowed in state CANCELLED)
+
+tests\test_order_lifecycle.py:40: Failed</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-64-CANCELLED-pay]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-65-CANCELLED-cancel]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-66-CANCELLED-collect]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_invalid_transitions_rejected[TC-67-CANCELLED-complete_refund]" time="0.001" /><testcase classname="tests.test_order_lifecycle" name="test_TC_68_sequence_pay_collect_is_final" time="0.001"><failure message="Failed: DID NOT RAISE InvalidTransitionError">def test_TC_68_sequence_pay_collect_is_final():
+        """TC-68: CREATED -pay-&gt; PAID -collect-&gt; COLLECTED; COLLECTED is final."""
+        o = Order(4, "STUDENT")
+        o.pay(); o.collect()
+        assert o.state == "COLLECTED", f"TC-68 REQ-F7: expected COLLECTED, got {o.state}"
+        for ev in ("pay", "cancel", "collect", "complete_refund"):
+&gt;           with pytest.raises(InvalidTransitionError):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE InvalidTransitionError
+
+tests\test_order_lifecycle.py:110: Failed</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_TC_69_sequence_pay_cancel_refund" time="0.001"><failure message="tickethub.InvalidTransitionError: 'complete_refund' not allowed in state CANCELLED">def test_TC_69_sequence_pay_cancel_refund():
+        """TC-69: CREATED -pay-&gt; PAID -cancel-&gt; REFUND_PENDING -complete_refund-&gt; REFUNDED (final)."""
+        o = Order(1, "STAFF")
+        trail = [o.state]
+        for ev in ("pay", "cancel", "complete_refund"):
+&gt;           getattr(o, ev)()
+
+tests\test_order_lifecycle.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\tickethub.py:90: in complete_refund
+    self._fire("complete_refund")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;tickethub.Order object at 0x000001D44B2F0770&gt;, event = 'complete_refund'
+
+    def _fire(self, event):
+        key = (self.state, event)
+        if key not in _TRANSITIONS:
+&gt;           raise InvalidTransitionError(f"'{event}' not allowed in state {self.state}")
+E           tickethub.InvalidTransitionError: 'complete_refund' not allowed in state CANCELLED
+
+src\tickethub.py:77: InvalidTransitionError</failure></testcase><testcase classname="tests.test_order_lifecycle" name="test_TC_70_rejected_event_does_not_corrupt_path" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_valid_classes[TC-01-qty-valid-3]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_valid_classes[TC-08-type-STUDENT]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_valid_classes[TC-09-type-STAFF]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_valid_classes[TC-14-promo-SAVE10]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_quantity[TC-02-qty-below-range]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_quantity[TC-03-qty-above-range]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_quantity[TC-04-qty-float]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_quantity[TC-05-qty-string]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_quantity[TC-06-qty-None]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_quantity[TC-07-qty-bool]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_customer_type[TC-10-type-lowercase]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_customer_type[TC-11-type-unknown]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_customer_type[TC-12-type-empty]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_customer_type[TC-13-type-None]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_promo[TC-15-promo-wrong-case]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">request = &lt;FixtureRequest for &lt;Function test_ep_invalid_promo[TC-15-promo-wrong-case]&gt;&gt;
+promo = 'save10'
+
+    @pytest.mark.parametrize("promo", [
+        P("save10", id="TC-15-promo-wrong-case"),
+        P("BADCODE", id="TC-16-promo-unknown"),
+        P("", id="TC-17-promo-empty"),
+        P("SAVE10 ", id="TC-18-promo-trailing-space"),
+    ])
+    def test_ep_invalid_promo(request, promo):
+        """EP invalid promo code classes (REQ-F6)."""
+&gt;       _check_raises(request.node.callspec.id[:5], "REQ-F6", ValueError, 2, "PUBLIC", promo)
+
+tests\test_pricing.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-15', req = 'REQ-F6', exc = &lt;class 'ValueError'&gt;, q = 2
+ctype = 'PUBLIC', promo = 'save10'
+
+    def _check_raises(tc, req, exc, q, ctype, promo=None):
+&gt;       with pytest.raises(exc) as info:
+             ^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_pricing.py:38: Failed</failure></testcase><testcase classname="tests.test_pricing" name="test_ep_invalid_promo[TC-16-promo-unknown]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_promo[TC-17-promo-empty]" time="0.001" /><testcase classname="tests.test_pricing" name="test_ep_invalid_promo[TC-18-promo-trailing-space]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_quantity_range[TC-19-qty-0]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_quantity_range[TC-20-qty-1]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_quantity_range[TC-21-qty-2]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_quantity_range[TC-22-qty-9]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_quantity_range[TC-23-qty-10]" time="0.001"><failure message="ValueError: quantity must be between 1 and 10">request = &lt;FixtureRequest for &lt;Function test_bva_quantity_range[TC-23-qty-10]&gt;&gt;
+q = 10, exp = '189.91'
+
+    @pytest.mark.parametrize("q,exp", [
+        P(0, ValueError, id="TC-19-qty-0"),
+        P(1, "19.99", id="TC-20-qty-1"),
+        P(2, "39.98", id="TC-21-qty-2"),
+        P(9, "170.91", id="TC-22-qty-9"),
+        P(10, "189.91", id="TC-23-qty-10"),
+        P(11, ValueError, id="TC-24-qty-11"),
+    ])
+    def test_bva_quantity_range(request, q, exp):
+        """BVA on quantity limits 1 and 10 (REQ-F1, REQ-F3, REQ-F5)."""
+        tc = request.node.callspec.id[:5]
+        if exp is ValueError:
+            _check_raises(tc, "REQ-F1", ValueError, q, "PUBLIC")
+        else:
+&gt;           _check_total(tc, "REQ-F1", q, "PUBLIC", None, exp)
+
+tests\test_pricing.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_pricing.py:23: in _check_total
+    got = th.calculate_total(q, ctype, promo)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\tickethub.py:54: in calculate_total
+    rate = calculate_discount(quantity, customer_type, promo_code)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\tickethub.py:44: in calculate_discount
+    _validate(quantity, customer_type, promo_code)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+quantity = 10, customer_type = 'PUBLIC', promo_code = None
+
+    def _validate(quantity, customer_type, promo_code):
+        if isinstance(quantity, bool) or not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
+        if quantity &lt; MIN_QTY or quantity &gt;= MAX_QTY:
+&gt;           raise ValueError("quantity must be between 1 and 10")
+E           ValueError: quantity must be between 1 and 10
+
+src\tickethub.py:36: ValueError</failure></testcase><testcase classname="tests.test_pricing" name="test_bva_quantity_range[TC-24-qty-11]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_bulk_threshold[TC-25-bulk-4]" time="0.001" /><testcase classname="tests.test_pricing" name="test_bva_bulk_threshold[TC-26-bulk-5]" time="0.002"><failure message="AssertionError: TC-26 REQ-F4: calculate_discount(5, 'PUBLIC', None) expected rate 0.05, got 0&#10;assert Decimal('0') == Decimal('0.05')&#10; +  where Decimal('0.05') = D('0.05')">request = &lt;FixtureRequest for &lt;Function test_bva_bulk_threshold[TC-26-bulk-5]&gt;&gt;
+q = 5, rate = '0.05', exp = '94.95'
+
+    @pytest.mark.parametrize("q,rate,exp", [
+        P(4, "0", "79.96", id="TC-25-bulk-4"),
+        P(5, "0.05", "94.95", id="TC-26-bulk-5"),
+        P(6, "0.05", "113.94", id="TC-27-bulk-6"),
+    ])
+    def test_bva_bulk_threshold(request, q, rate, exp):
+        """BVA on the bulk-discount threshold of 5 tickets (REQ-F4)."""
+        tc = request.node.callspec.id[:5]
+&gt;       _check_rate(tc, "REQ-F4", q, "PUBLIC", None, rate)
+
+tests\test_pricing.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-26', req = 'REQ-F4', q = 5, ctype = 'PUBLIC', promo = None
+exp_rate = '0.05'
+
+    def _check_rate(tc, req, q, ctype, promo, exp_rate):
+        got = th.calculate_discount(q, ctype, promo)
+&gt;       assert got == D(exp_rate), (
+            f"{tc} {req}: calculate_discount({q!r}, {ctype!r}, {promo!r}) "
+            f"expected rate {exp_rate}, got {got}")
+E       AssertionError: TC-26 REQ-F4: calculate_discount(5, 'PUBLIC', None) expected rate 0.05, got 0
+E       assert Decimal('0') == Decimal('0.05')
+E        +  where Decimal('0.05') = D('0.05')
+
+tests\test_pricing.py:32: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_bva_bulk_threshold[TC-27-bulk-6]" time="0.001" /><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-28-R1-student-promo-cap]" time="0.001"><failure message="AssertionError: TC-28 REQ-F4: calculate_discount(3, 'STUDENT', 'SAVE10') expected rate 0.25, got 0.30&#10;assert Decimal('0.30') == Decimal('0.25')&#10; +  where Decimal('0.25') = D('0.25')">request = &lt;FixtureRequest for &lt;Function test_decision_table_rules[TC-28-R1-student-promo-cap]&gt;&gt;
+q = 3, ctype = 'STUDENT', promo = 'SAVE10', rate = '0.25', exp = '44.98'
+
+    @pytest.mark.parametrize("q,ctype,promo,rate,exp", [
+        P(3, "STUDENT", "SAVE10", "0.25", "44.98", id="TC-28-R1-student-promo-cap"),
+        P(7, "STUDENT", None, "0.25", "104.95", id="TC-29-R2-student-bulk"),
+        P(3, "STUDENT", None, "0.20", "47.98", id="TC-30-R3-student-none"),
+        P(3, "STAFF", "SAVE10", "0.20", "47.98", id="TC-31-R4-staff-promo"),
+        P(7, "STAFF", None, "0.15", "118.94", id="TC-32-R5-staff-bulk"),
+        P(3, "STAFF", None, "0.10", "53.97", id="TC-33-R6-staff-none"),
+        P(3, "PUBLIC", "SAVE10", "0.10", "53.97", id="TC-34-R7-public-promo"),
+        P(7, "PUBLIC", None, "0.05", "132.93", id="TC-35-R8-public-bulk"),
+        P(3, "PUBLIC", None, "0", "59.97", id="TC-36-R9-public-none"),
+    ])
+    def test_decision_table_rules(request, q, ctype, promo, rate, exp):
+        """Collapsed decision table for the discount rule (REQ-F4, REQ-F5)."""
+        tc = request.node.callspec.id[:5]
+&gt;       _check_rate(tc, "REQ-F4", q, ctype, promo, rate)
+
+tests\test_pricing.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-28', req = 'REQ-F4', q = 3, ctype = 'STUDENT', promo = 'SAVE10'
+exp_rate = '0.25'
+
+    def _check_rate(tc, req, q, ctype, promo, exp_rate):
+        got = th.calculate_discount(q, ctype, promo)
+&gt;       assert got == D(exp_rate), (
+            f"{tc} {req}: calculate_discount({q!r}, {ctype!r}, {promo!r}) "
+            f"expected rate {exp_rate}, got {got}")
+E       AssertionError: TC-28 REQ-F4: calculate_discount(3, 'STUDENT', 'SAVE10') expected rate 0.25, got 0.30
+E       assert Decimal('0.30') == Decimal('0.25')
+E        +  where Decimal('0.25') = D('0.25')
+
+tests\test_pricing.py:32: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-29-R2-student-bulk]" time="0.001"><failure message="AssertionError: TC-29 REQ-F5: calculate_total(7, 'STUDENT', None) expected 104.95, got 104.94&#10;assert Decimal('104.94') == Decimal('104.95')&#10; +  where Decimal('104.95') = D('104.95')">request = &lt;FixtureRequest for &lt;Function test_decision_table_rules[TC-29-R2-student-bulk]&gt;&gt;
+q = 7, ctype = 'STUDENT', promo = None, rate = '0.25', exp = '104.95'
+
+    @pytest.mark.parametrize("q,ctype,promo,rate,exp", [
+        P(3, "STUDENT", "SAVE10", "0.25", "44.98", id="TC-28-R1-student-promo-cap"),
+        P(7, "STUDENT", None, "0.25", "104.95", id="TC-29-R2-student-bulk"),
+        P(3, "STUDENT", None, "0.20", "47.98", id="TC-30-R3-student-none"),
+        P(3, "STAFF", "SAVE10", "0.20", "47.98", id="TC-31-R4-staff-promo"),
+        P(7, "STAFF", None, "0.15", "118.94", id="TC-32-R5-staff-bulk"),
+        P(3, "STAFF", None, "0.10", "53.97", id="TC-33-R6-staff-none"),
+        P(3, "PUBLIC", "SAVE10", "0.10", "53.97", id="TC-34-R7-public-promo"),
+        P(7, "PUBLIC", None, "0.05", "132.93", id="TC-35-R8-public-bulk"),
+        P(3, "PUBLIC", None, "0", "59.97", id="TC-36-R9-public-none"),
+    ])
+    def test_decision_table_rules(request, q, ctype, promo, rate, exp):
+        """Collapsed decision table for the discount rule (REQ-F4, REQ-F5)."""
+        tc = request.node.callspec.id[:5]
+        _check_rate(tc, "REQ-F4", q, ctype, promo, rate)
+&gt;       _check_total(tc, "REQ-F5", q, ctype, promo, exp)
+
+tests\test_pricing.py:143: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-29', req = 'REQ-F5', q = 7, ctype = 'STUDENT', promo = None
+exp_total = '104.95'
+
+    def _check_total(tc, req, q, ctype, promo, exp_total):
+        got = th.calculate_total(q, ctype, promo)
+        assert isinstance(got, D), f"{tc} {req}: total must be a Decimal, got {type(got).__name__}"
+&gt;       assert got == D(exp_total), (
+            f"{tc} {req}: calculate_total({q!r}, {ctype!r}, {promo!r}) "
+            f"expected {exp_total}, got {got}")
+E       AssertionError: TC-29 REQ-F5: calculate_total(7, 'STUDENT', None) expected 104.95, got 104.94
+E       assert Decimal('104.94') == Decimal('104.95')
+E        +  where Decimal('104.95') = D('104.95')
+
+tests\test_pricing.py:25: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-30-R3-student-none]" time="0.001"><failure message="AssertionError: TC-30 REQ-F5: calculate_total(3, 'STUDENT', None) expected 47.98, got 47.97&#10;assert Decimal('47.97') == Decimal('47.98')&#10; +  where Decimal('47.98') = D('47.98')">request = &lt;FixtureRequest for &lt;Function test_decision_table_rules[TC-30-R3-student-none]&gt;&gt;
+q = 3, ctype = 'STUDENT', promo = None, rate = '0.20', exp = '47.98'
+
+    @pytest.mark.parametrize("q,ctype,promo,rate,exp", [
+        P(3, "STUDENT", "SAVE10", "0.25", "44.98", id="TC-28-R1-student-promo-cap"),
+        P(7, "STUDENT", None, "0.25", "104.95", id="TC-29-R2-student-bulk"),
+        P(3, "STUDENT", None, "0.20", "47.98", id="TC-30-R3-student-none"),
+        P(3, "STAFF", "SAVE10", "0.20", "47.98", id="TC-31-R4-staff-promo"),
+        P(7, "STAFF", None, "0.15", "118.94", id="TC-32-R5-staff-bulk"),
+        P(3, "STAFF", None, "0.10", "53.97", id="TC-33-R6-staff-none"),
+        P(3, "PUBLIC", "SAVE10", "0.10", "53.97", id="TC-34-R7-public-promo"),
+        P(7, "PUBLIC", None, "0.05", "132.93", id="TC-35-R8-public-bulk"),
+        P(3, "PUBLIC", None, "0", "59.97", id="TC-36-R9-public-none"),
+    ])
+    def test_decision_table_rules(request, q, ctype, promo, rate, exp):
+        """Collapsed decision table for the discount rule (REQ-F4, REQ-F5)."""
+        tc = request.node.callspec.id[:5]
+        _check_rate(tc, "REQ-F4", q, ctype, promo, rate)
+&gt;       _check_total(tc, "REQ-F5", q, ctype, promo, exp)
+
+tests\test_pricing.py:143: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-30', req = 'REQ-F5', q = 3, ctype = 'STUDENT', promo = None
+exp_total = '47.98'
+
+    def _check_total(tc, req, q, ctype, promo, exp_total):
+        got = th.calculate_total(q, ctype, promo)
+        assert isinstance(got, D), f"{tc} {req}: total must be a Decimal, got {type(got).__name__}"
+&gt;       assert got == D(exp_total), (
+            f"{tc} {req}: calculate_total({q!r}, {ctype!r}, {promo!r}) "
+            f"expected {exp_total}, got {got}")
+E       AssertionError: TC-30 REQ-F5: calculate_total(3, 'STUDENT', None) expected 47.98, got 47.97
+E       assert Decimal('47.97') == Decimal('47.98')
+E        +  where Decimal('47.98') = D('47.98')
+
+tests\test_pricing.py:25: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-31-R4-staff-promo]" time="0.001"><failure message="AssertionError: TC-31 REQ-F5: calculate_total(3, 'STAFF', 'SAVE10') expected 47.98, got 47.97&#10;assert Decimal('47.97') == Decimal('47.98')&#10; +  where Decimal('47.98') = D('47.98')">request = &lt;FixtureRequest for &lt;Function test_decision_table_rules[TC-31-R4-staff-promo]&gt;&gt;
+q = 3, ctype = 'STAFF', promo = 'SAVE10', rate = '0.20', exp = '47.98'
+
+    @pytest.mark.parametrize("q,ctype,promo,rate,exp", [
+        P(3, "STUDENT", "SAVE10", "0.25", "44.98", id="TC-28-R1-student-promo-cap"),
+        P(7, "STUDENT", None, "0.25", "104.95", id="TC-29-R2-student-bulk"),
+        P(3, "STUDENT", None, "0.20", "47.98", id="TC-30-R3-student-none"),
+        P(3, "STAFF", "SAVE10", "0.20", "47.98", id="TC-31-R4-staff-promo"),
+        P(7, "STAFF", None, "0.15", "118.94", id="TC-32-R5-staff-bulk"),
+        P(3, "STAFF", None, "0.10", "53.97", id="TC-33-R6-staff-none"),
+        P(3, "PUBLIC", "SAVE10", "0.10", "53.97", id="TC-34-R7-public-promo"),
+        P(7, "PUBLIC", None, "0.05", "132.93", id="TC-35-R8-public-bulk"),
+        P(3, "PUBLIC", None, "0", "59.97", id="TC-36-R9-public-none"),
+    ])
+    def test_decision_table_rules(request, q, ctype, promo, rate, exp):
+        """Collapsed decision table for the discount rule (REQ-F4, REQ-F5)."""
+        tc = request.node.callspec.id[:5]
+        _check_rate(tc, "REQ-F4", q, ctype, promo, rate)
+&gt;       _check_total(tc, "REQ-F5", q, ctype, promo, exp)
+
+tests\test_pricing.py:143: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-31', req = 'REQ-F5', q = 3, ctype = 'STAFF', promo = 'SAVE10'
+exp_total = '47.98'
+
+    def _check_total(tc, req, q, ctype, promo, exp_total):
+        got = th.calculate_total(q, ctype, promo)
+        assert isinstance(got, D), f"{tc} {req}: total must be a Decimal, got {type(got).__name__}"
+&gt;       assert got == D(exp_total), (
+            f"{tc} {req}: calculate_total({q!r}, {ctype!r}, {promo!r}) "
+            f"expected {exp_total}, got {got}")
+E       AssertionError: TC-31 REQ-F5: calculate_total(3, 'STAFF', 'SAVE10') expected 47.98, got 47.97
+E       assert Decimal('47.97') == Decimal('47.98')
+E        +  where Decimal('47.98') = D('47.98')
+
+tests\test_pricing.py:25: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-32-R5-staff-bulk]" time="0.001" /><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-33-R6-staff-none]" time="0.001" /><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-34-R7-public-promo]" time="0.001" /><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-35-R8-public-bulk]" time="0.001" /><testcase classname="tests.test_pricing" name="test_decision_table_rules[TC-36-R9-public-none]" time="0.001" /><testcase classname="tests.test_pricing" name="test_promo_and_bulk_never_combine[TC-37-nostack-public]" time="0.001"><failure message="AssertionError: TC-37 REQ-F4: calculate_discount(7, 'PUBLIC', 'SAVE10') expected rate 0.10, got 0.15&#10;assert Decimal('0.15') == Decimal('0.10')&#10; +  where Decimal('0.10') = D('0.10')">request = &lt;FixtureRequest for &lt;Function test_promo_and_bulk_never_combine[TC-37-nostack-public]&gt;&gt;
+ctype = 'PUBLIC', rate = '0.10', exp = '125.94'
+
+    @pytest.mark.parametrize("ctype,rate,exp", [
+        P("PUBLIC", "0.10", "125.94", id="TC-37-nostack-public"),
+        P("STAFF", "0.20", "111.94", id="TC-38-nostack-staff"),
+        P("STUDENT", "0.25", "104.95", id="TC-39-nostack-student"),
+    ])
+    def test_promo_and_bulk_never_combine(request, ctype, rate, exp):
+        """Cause-effect constraint: promo excludes bulk (REQ-F4)."""
+        tc = request.node.callspec.id[:5]
+&gt;       _check_rate(tc, "REQ-F4", 7, ctype, "SAVE10", rate)
+
+tests\test_pricing.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-37', req = 'REQ-F4', q = 7, ctype = 'PUBLIC', promo = 'SAVE10'
+exp_rate = '0.10'
+
+    def _check_rate(tc, req, q, ctype, promo, exp_rate):
+        got = th.calculate_discount(q, ctype, promo)
+&gt;       assert got == D(exp_rate), (
+            f"{tc} {req}: calculate_discount({q!r}, {ctype!r}, {promo!r}) "
+            f"expected rate {exp_rate}, got {got}")
+E       AssertionError: TC-37 REQ-F4: calculate_discount(7, 'PUBLIC', 'SAVE10') expected rate 0.10, got 0.15
+E       assert Decimal('0.15') == Decimal('0.10')
+E        +  where Decimal('0.10') = D('0.10')
+
+tests\test_pricing.py:32: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_promo_and_bulk_never_combine[TC-38-nostack-staff]" time="0.001"><failure message="AssertionError: TC-38 REQ-F4: calculate_discount(7, 'STAFF', 'SAVE10') expected rate 0.20, got 0.25&#10;assert Decimal('0.25') == Decimal('0.20')&#10; +  where Decimal('0.20') = D('0.20')">request = &lt;FixtureRequest for &lt;Function test_promo_and_bulk_never_combine[TC-38-nostack-staff]&gt;&gt;
+ctype = 'STAFF', rate = '0.20', exp = '111.94'
+
+    @pytest.mark.parametrize("ctype,rate,exp", [
+        P("PUBLIC", "0.10", "125.94", id="TC-37-nostack-public"),
+        P("STAFF", "0.20", "111.94", id="TC-38-nostack-staff"),
+        P("STUDENT", "0.25", "104.95", id="TC-39-nostack-student"),
+    ])
+    def test_promo_and_bulk_never_combine(request, ctype, rate, exp):
+        """Cause-effect constraint: promo excludes bulk (REQ-F4)."""
+        tc = request.node.callspec.id[:5]
+&gt;       _check_rate(tc, "REQ-F4", 7, ctype, "SAVE10", rate)
+
+tests\test_pricing.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-38', req = 'REQ-F4', q = 7, ctype = 'STAFF', promo = 'SAVE10'
+exp_rate = '0.20'
+
+    def _check_rate(tc, req, q, ctype, promo, exp_rate):
+        got = th.calculate_discount(q, ctype, promo)
+&gt;       assert got == D(exp_rate), (
+            f"{tc} {req}: calculate_discount({q!r}, {ctype!r}, {promo!r}) "
+            f"expected rate {exp_rate}, got {got}")
+E       AssertionError: TC-38 REQ-F4: calculate_discount(7, 'STAFF', 'SAVE10') expected rate 0.20, got 0.25
+E       assert Decimal('0.25') == Decimal('0.20')
+E        +  where Decimal('0.20') = D('0.20')
+
+tests\test_pricing.py:32: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_promo_and_bulk_never_combine[TC-39-nostack-student]" time="0.001"><failure message="AssertionError: TC-39 REQ-F4: calculate_discount(7, 'STUDENT', 'SAVE10') expected rate 0.25, got 0.30&#10;assert Decimal('0.30') == Decimal('0.25')&#10; +  where Decimal('0.25') = D('0.25')">request = &lt;FixtureRequest for &lt;Function test_promo_and_bulk_never_combine[TC-39-nostack-student]&gt;&gt;
+ctype = 'STUDENT', rate = '0.25', exp = '104.95'
+
+    @pytest.mark.parametrize("ctype,rate,exp", [
+        P("PUBLIC", "0.10", "125.94", id="TC-37-nostack-public"),
+        P("STAFF", "0.20", "111.94", id="TC-38-nostack-staff"),
+        P("STUDENT", "0.25", "104.95", id="TC-39-nostack-student"),
+    ])
+    def test_promo_and_bulk_never_combine(request, ctype, rate, exp):
+        """Cause-effect constraint: promo excludes bulk (REQ-F4)."""
+        tc = request.node.callspec.id[:5]
+&gt;       _check_rate(tc, "REQ-F4", 7, ctype, "SAVE10", rate)
+
+tests\test_pricing.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-39', req = 'REQ-F4', q = 7, ctype = 'STUDENT', promo = 'SAVE10'
+exp_rate = '0.25'
+
+    def _check_rate(tc, req, q, ctype, promo, exp_rate):
+        got = th.calculate_discount(q, ctype, promo)
+&gt;       assert got == D(exp_rate), (
+            f"{tc} {req}: calculate_discount({q!r}, {ctype!r}, {promo!r}) "
+            f"expected rate {exp_rate}, got {got}")
+E       AssertionError: TC-39 REQ-F4: calculate_discount(7, 'STUDENT', 'SAVE10') expected rate 0.25, got 0.30
+E       assert Decimal('0.30') == Decimal('0.25')
+E        +  where Decimal('0.25') = D('0.25')
+
+tests\test_pricing.py:32: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_rounding_half_up[TC-40-round-exact-half]" time="0.001"><failure message="AssertionError: TC-40 REQ-F5: calculate_total(5, 'PUBLIC', 'SAVE10') expected 89.96, got 89.95&#10;assert Decimal('89.95') == Decimal('89.96')&#10; +  where Decimal('89.96') = D('89.96')">request = &lt;FixtureRequest for &lt;Function test_rounding_half_up[TC-40-round-exact-half]&gt;&gt;
+q = 5, ctype = 'PUBLIC', promo = 'SAVE10', exp = '89.96'
+
+    @pytest.mark.parametrize("q,ctype,promo,exp", [
+        P(5, "PUBLIC", "SAVE10", "89.96", id="TC-40-round-exact-half"),   # 89.955
+        P(4, "STAFF", "SAVE10", "63.97", id="TC-41-round-above-half"),    # 63.968
+    ])
+    def test_rounding_half_up(request, q, ctype, promo, exp):
+        """Totals are rounded half-up to 2 d.p. (REQ-F5)."""
+&gt;       _check_total(request.node.callspec.id[:5], "REQ-F5", q, ctype, promo, exp)
+
+tests\test_pricing.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-40', req = 'REQ-F5', q = 5, ctype = 'PUBLIC', promo = 'SAVE10'
+exp_total = '89.96'
+
+    def _check_total(tc, req, q, ctype, promo, exp_total):
+        got = th.calculate_total(q, ctype, promo)
+        assert isinstance(got, D), f"{tc} {req}: total must be a Decimal, got {type(got).__name__}"
+&gt;       assert got == D(exp_total), (
+            f"{tc} {req}: calculate_total({q!r}, {ctype!r}, {promo!r}) "
+            f"expected {exp_total}, got {got}")
+E       AssertionError: TC-40 REQ-F5: calculate_total(5, 'PUBLIC', 'SAVE10') expected 89.96, got 89.95
+E       assert Decimal('89.95') == Decimal('89.96')
+E        +  where Decimal('89.96') = D('89.96')
+
+tests\test_pricing.py:25: AssertionError</failure></testcase><testcase classname="tests.test_pricing" name="test_rounding_half_up[TC-41-round-above-half]" time="0.001"><failure message="AssertionError: TC-41 REQ-F5: calculate_total(4, 'STAFF', 'SAVE10') expected 63.97, got 63.96&#10;assert Decimal('63.96') == Decimal('63.97')&#10; +  where Decimal('63.97') = D('63.97')">request = &lt;FixtureRequest for &lt;Function test_rounding_half_up[TC-41-round-above-half]&gt;&gt;
+q = 4, ctype = 'STAFF', promo = 'SAVE10', exp = '63.97'
+
+    @pytest.mark.parametrize("q,ctype,promo,exp", [
+        P(5, "PUBLIC", "SAVE10", "89.96", id="TC-40-round-exact-half"),   # 89.955
+        P(4, "STAFF", "SAVE10", "63.97", id="TC-41-round-above-half"),    # 63.968
+    ])
+    def test_rounding_half_up(request, q, ctype, promo, exp):
+        """Totals are rounded half-up to 2 d.p. (REQ-F5)."""
+&gt;       _check_total(request.node.callspec.id[:5], "REQ-F5", q, ctype, promo, exp)
+
+tests\test_pricing.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tc = 'TC-41', req = 'REQ-F5', q = 4, ctype = 'STAFF', promo = 'SAVE10'
+exp_total = '63.97'
+
+    def _check_total(tc, req, q, ctype, promo, exp_total):
+        got = th.calculate_total(q, ctype, promo)
+        assert isinstance(got, D), f"{tc} {req}: total must be a Decimal, got {type(got).__name__}"
+&gt;       assert got == D(exp_total), (
+            f"{tc} {req}: calculate_total({q!r}, {ctype!r}, {promo!r}) "
+            f"expected {exp_total}, got {got}")
+E       AssertionError: TC-41 REQ-F5: calculate_total(4, 'STAFF', 'SAVE10') expected 63.97, got 63.96
+E       assert Decimal('63.96') == Decimal('63.97')
+E        +  where Decimal('63.97') = D('63.97')
+
+tests\test_pricing.py:25: AssertionError</failure></testcase></testsuite></testsuites>

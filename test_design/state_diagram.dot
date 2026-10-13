@@ -1,0 +1,20 @@
+digraph OrderLifecycle {
+  rankdir=TB; bgcolor="white"; pad=0.3; nodesep=0.9; ranksep=0.55;
+  node [fontname="Helvetica", fontsize=12, shape=box, style="rounded,filled", fillcolor="#EEF3FA", color="#2F5597", penwidth=1.4];
+  edge [fontname="Helvetica", fontsize=11, color="#333333", penwidth=1.2];
+  start [shape=point, width=0.18, fillcolor=black, label=""];
+  CREATED; PAID; REFUND_PENDING;
+  CANCELLED      [peripheries=2, fillcolor="#F2F2F2"];
+  COLLECTED      [peripheries=2, fillcolor="#F2F2F2"];
+  REFUNDED       [peripheries=2, fillcolor="#F2F2F2"];
+  start -> CREATED [label="Order(...)"];
+  CREATED -> PAID [label="pay  (T1)"];
+  CREATED -> CANCELLED [label="cancel  (T2)"];
+  PAID -> REFUND_PENDING [label="cancel  (T3)"];
+  PAID -> COLLECTED [label="collect  (T4)"];
+  REFUND_PENDING -> REFUNDED [label="complete_refund  (T5)"];
+  { rank=same; PAID; CANCELLED; legend; }
+  { rank=same; REFUND_PENDING; COLLECTED; }
+  legend [shape=note, fillcolor="#FFFFFF", color="#999999", fontsize=10,
+          label="Double border = final state\lAny event not drawn raises\lInvalidTransitionError and\lleaves the state unchanged (REQ-F7)\l"];
+}

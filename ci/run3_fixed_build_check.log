@@ -1,0 +1,164 @@
+# RUN 3 - regression check against a corrected build (TICKETHUB_MODULE=tickethub_reference): strict xfail must turn red
+# date: 2026-10-09T05:54:51Z  python: Python 3.13.16  pytest: pytest 9.1.1
+# os: Linux 6.18.44-fc-v80 x86_64
+# sha256 src/tickethub.py: 71e842b280aaf5b8d75d826abef0b364b2802f491a1c20cf2056d170f722c4a3
+# command: TICKETHUB_MODULE=tickethub_reference python3 -m pytest -v
+
+============================= test session starts ==============================
+platform linux -- Python 3.13.16, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+rootdir: /home/claude/SQT_Test1_StudentID
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 74 items
+
+tests/test_nonfunctional.py::test_TC_71_latency_smoke_p95 PASSED         [  1%]
+tests/test_nonfunctional.py::test_TC_72_error_message_names_field[TC-72a-msg-quantity] PASSED [  2%]
+tests/test_nonfunctional.py::test_TC_72_error_message_names_field[TC-72b-msg-customer-type] PASSED [  4%]
+tests/test_nonfunctional.py::test_TC_72_error_message_names_field[TC-72c-msg-promo] PASSED [  5%]
+tests/test_order_lifecycle.py::test_TC_42_new_order_starts_created PASSED [  6%]
+tests/test_order_lifecycle.py::test_TC_43_invalid_order_not_created PASSED [  8%]
+tests/test_order_lifecycle.py::test_valid_transitions[TC-44-CREATED-pay] PASSED [  9%]
+tests/test_order_lifecycle.py::test_valid_transitions[TC-45-CREATED-cancel] PASSED [ 10%]
+tests/test_order_lifecycle.py::test_valid_transitions[TC-46-PAID-cancel] FAILED [ 12%]
+tests/test_order_lifecycle.py::test_valid_transitions[TC-47-PAID-collect] PASSED [ 13%]
+tests/test_order_lifecycle.py::test_valid_transitions[TC-48-REFUND_PENDING-complete_refund] FAILED [ 14%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-49-CREATED-collect] PASSED [ 16%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-50-CREATED-complete_refund] PASSED [ 17%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-51-PAID-pay] PASSED [ 18%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-52-PAID-complete_refund] PASSED [ 20%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-53-COLLECTED-pay] PASSED [ 21%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-54-COLLECTED-cancel] FAILED [ 22%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-55-COLLECTED-collect] PASSED [ 24%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-56-COLLECTED-complete_refund] PASSED [ 25%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-57-REFUND_PENDING-pay] FAILED [ 27%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-58-REFUND_PENDING-cancel] FAILED [ 28%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-59-REFUND_PENDING-collect] FAILED [ 29%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-60-REFUNDED-pay] FAILED [ 31%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-61-REFUNDED-cancel] FAILED [ 32%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-62-REFUNDED-collect] FAILED [ 33%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-63-REFUNDED-complete_refund] FAILED [ 35%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-64-CANCELLED-pay] PASSED [ 36%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-65-CANCELLED-cancel] PASSED [ 37%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-66-CANCELLED-collect] PASSED [ 39%]
+tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-67-CANCELLED-complete_refund] PASSED [ 40%]
+tests/test_order_lifecycle.py::test_TC_68_sequence_pay_collect_is_final FAILED [ 41%]
+tests/test_order_lifecycle.py::test_TC_69_sequence_pay_cancel_refund FAILED [ 43%]
+tests/test_order_lifecycle.py::test_TC_70_rejected_event_does_not_corrupt_path PASSED [ 44%]
+tests/test_pricing.py::test_ep_valid_classes[TC-01-qty-valid-3] PASSED   [ 45%]
+tests/test_pricing.py::test_ep_valid_classes[TC-08-type-STUDENT] PASSED  [ 47%]
+tests/test_pricing.py::test_ep_valid_classes[TC-09-type-STAFF] PASSED    [ 48%]
+tests/test_pricing.py::test_ep_valid_classes[TC-14-promo-SAVE10] PASSED  [ 50%]
+tests/test_pricing.py::test_ep_invalid_quantity[TC-02-qty-below-range] PASSED [ 51%]
+tests/test_pricing.py::test_ep_invalid_quantity[TC-03-qty-above-range] PASSED [ 52%]
+tests/test_pricing.py::test_ep_invalid_quantity[TC-04-qty-float] PASSED  [ 54%]
+tests/test_pricing.py::test_ep_invalid_quantity[TC-05-qty-string] PASSED [ 55%]
+tests/test_pricing.py::test_ep_invalid_quantity[TC-06-qty-None] PASSED   [ 56%]
+tests/test_pricing.py::test_ep_invalid_quantity[TC-07-qty-bool] PASSED   [ 58%]
+tests/test_pricing.py::test_ep_invalid_customer_type[TC-10-type-lowercase] PASSED [ 59%]
+tests/test_pricing.py::test_ep_invalid_customer_type[TC-11-type-unknown] PASSED [ 60%]
+tests/test_pricing.py::test_ep_invalid_customer_type[TC-12-type-empty] PASSED [ 62%]
+tests/test_pricing.py::test_ep_invalid_customer_type[TC-13-type-None] PASSED [ 63%]
+tests/test_pricing.py::test_ep_invalid_promo[TC-15-promo-wrong-case] FAILED [ 64%]
+tests/test_pricing.py::test_ep_invalid_promo[TC-16-promo-unknown] PASSED [ 66%]
+tests/test_pricing.py::test_ep_invalid_promo[TC-17-promo-empty] PASSED   [ 67%]
+tests/test_pricing.py::test_ep_invalid_promo[TC-18-promo-trailing-space] PASSED [ 68%]
+tests/test_pricing.py::test_bva_quantity_range[TC-19-qty-0] PASSED       [ 70%]
+tests/test_pricing.py::test_bva_quantity_range[TC-20-qty-1] PASSED       [ 71%]
+tests/test_pricing.py::test_bva_quantity_range[TC-21-qty-2] PASSED       [ 72%]
+tests/test_pricing.py::test_bva_quantity_range[TC-22-qty-9] PASSED       [ 74%]
+tests/test_pricing.py::test_bva_quantity_range[TC-23-qty-10] FAILED      [ 75%]
+tests/test_pricing.py::test_bva_quantity_range[TC-24-qty-11] PASSED      [ 77%]
+tests/test_pricing.py::test_bva_bulk_threshold[TC-25-bulk-4] PASSED      [ 78%]
+tests/test_pricing.py::test_bva_bulk_threshold[TC-26-bulk-5] FAILED      [ 79%]
+tests/test_pricing.py::test_bva_bulk_threshold[TC-27-bulk-6] PASSED      [ 81%]
+tests/test_pricing.py::test_decision_table_rules[TC-28-R1-student-promo-cap] FAILED [ 82%]
+tests/test_pricing.py::test_decision_table_rules[TC-29-R2-student-bulk] FAILED [ 83%]
+tests/test_pricing.py::test_decision_table_rules[TC-30-R3-student-none] FAILED [ 85%]
+tests/test_pricing.py::test_decision_table_rules[TC-31-R4-staff-promo] FAILED [ 86%]
+tests/test_pricing.py::test_decision_table_rules[TC-32-R5-staff-bulk] PASSED [ 87%]
+tests/test_pricing.py::test_decision_table_rules[TC-33-R6-staff-none] PASSED [ 89%]
+tests/test_pricing.py::test_decision_table_rules[TC-34-R7-public-promo] PASSED [ 90%]
+tests/test_pricing.py::test_decision_table_rules[TC-35-R8-public-bulk] PASSED [ 91%]
+tests/test_pricing.py::test_decision_table_rules[TC-36-R9-public-none] PASSED [ 93%]
+tests/test_pricing.py::test_promo_and_bulk_never_combine[TC-37-nostack-public] FAILED [ 94%]
+tests/test_pricing.py::test_promo_and_bulk_never_combine[TC-38-nostack-staff] FAILED [ 95%]
+tests/test_pricing.py::test_promo_and_bulk_never_combine[TC-39-nostack-student] FAILED [ 97%]
+tests/test_pricing.py::test_rounding_half_up[TC-40-round-exact-half] FAILED [ 98%]
+tests/test_pricing.py::test_rounding_half_up[TC-41-round-above-half] FAILED [100%]
+
+=================================== FAILURES ===================================
+__________________ test_valid_transitions[TC-46-PAID-cancel] ___________________
+[XPASS(strict)] DEF-06 (logged)
+_________ test_valid_transitions[TC-48-REFUND_PENDING-complete_refund] _________
+[XPASS(strict)] DEF-06 (logged)
+__________ test_invalid_transitions_rejected[TC-54-COLLECTED-cancel] ___________
+[XPASS(strict)] DEF-07 (logged)
+_________ test_invalid_transitions_rejected[TC-57-REFUND_PENDING-pay] __________
+[XPASS(strict)] DEF-06 (logged)
+________ test_invalid_transitions_rejected[TC-58-REFUND_PENDING-cancel] ________
+[XPASS(strict)] DEF-06 (logged)
+_______ test_invalid_transitions_rejected[TC-59-REFUND_PENDING-collect] ________
+[XPASS(strict)] DEF-06 (logged)
+____________ test_invalid_transitions_rejected[TC-60-REFUNDED-pay] _____________
+[XPASS(strict)] DEF-06 (logged)
+___________ test_invalid_transitions_rejected[TC-61-REFUNDED-cancel] ___________
+[XPASS(strict)] DEF-06 (logged)
+__________ test_invalid_transitions_rejected[TC-62-REFUNDED-collect] ___________
+[XPASS(strict)] DEF-06 (logged)
+______ test_invalid_transitions_rejected[TC-63-REFUNDED-complete_refund] _______
+[XPASS(strict)] DEF-06 (logged)
+___________________ test_TC_68_sequence_pay_collect_is_final ___________________
+[XPASS(strict)] DEF-07 (logged)
+____________________ test_TC_69_sequence_pay_cancel_refund _____________________
+[XPASS(strict)] DEF-06 (logged)
+________________ test_ep_invalid_promo[TC-15-promo-wrong-case] _________________
+[XPASS(strict)] DEF-04 (logged)
+____________________ test_bva_quantity_range[TC-23-qty-10] _____________________
+[XPASS(strict)] DEF-01 (logged)
+____________________ test_bva_bulk_threshold[TC-26-bulk-5] _____________________
+[XPASS(strict)] DEF-02 (logged)
+____________ test_decision_table_rules[TC-28-R1-student-promo-cap] _____________
+[XPASS(strict)] DEF-03 (logged)
+_______________ test_decision_table_rules[TC-29-R2-student-bulk] _______________
+[XPASS(strict)] DEF-08 (logged)
+_______________ test_decision_table_rules[TC-30-R3-student-none] _______________
+[XPASS(strict)] DEF-08 (logged)
+_______________ test_decision_table_rules[TC-31-R4-staff-promo] ________________
+[XPASS(strict)] DEF-08 (logged)
+___________ test_promo_and_bulk_never_combine[TC-37-nostack-public] ____________
+[XPASS(strict)] DEF-05 (logged)
+____________ test_promo_and_bulk_never_combine[TC-38-nostack-staff] ____________
+[XPASS(strict)] DEF-05 (logged)
+___________ test_promo_and_bulk_never_combine[TC-39-nostack-student] ___________
+[XPASS(strict)] DEF-05, DEF-03 (logged)
+________________ test_rounding_half_up[TC-40-round-exact-half] _________________
+[XPASS(strict)] DEF-08 (logged)
+________________ test_rounding_half_up[TC-41-round-above-half] _________________
+[XPASS(strict)] DEF-08 (logged)
+=========================== short test summary info ============================
+FAILED tests/test_order_lifecycle.py::test_valid_transitions[TC-46-PAID-cancel]
+FAILED tests/test_order_lifecycle.py::test_valid_transitions[TC-48-REFUND_PENDING-complete_refund]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-54-COLLECTED-cancel]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-57-REFUND_PENDING-pay]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-58-REFUND_PENDING-cancel]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-59-REFUND_PENDING-collect]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-60-REFUNDED-pay]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-61-REFUNDED-cancel]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-62-REFUNDED-collect]
+FAILED tests/test_order_lifecycle.py::test_invalid_transitions_rejected[TC-63-REFUNDED-complete_refund]
+FAILED tests/test_order_lifecycle.py::test_TC_68_sequence_pay_collect_is_final
+FAILED tests/test_order_lifecycle.py::test_TC_69_sequence_pay_cancel_refund
+FAILED tests/test_pricing.py::test_ep_invalid_promo[TC-15-promo-wrong-case]
+FAILED tests/test_pricing.py::test_bva_quantity_range[TC-23-qty-10] - [XPASS(...
+FAILED tests/test_pricing.py::test_bva_bulk_threshold[TC-26-bulk-5] - [XPASS(...
+FAILED tests/test_pricing.py::test_decision_table_rules[TC-28-R1-student-promo-cap]
+FAILED tests/test_pricing.py::test_decision_table_rules[TC-29-R2-student-bulk]
+FAILED tests/test_pricing.py::test_decision_table_rules[TC-30-R3-student-none]
+FAILED tests/test_pricing.py::test_decision_table_rules[TC-31-R4-staff-promo]
+FAILED tests/test_pricing.py::test_promo_and_bulk_never_combine[TC-37-nostack-public]
+FAILED tests/test_pricing.py::test_promo_and_bulk_never_combine[TC-38-nostack-staff]
+FAILED tests/test_pricing.py::test_promo_and_bulk_never_combine[TC-39-nostack-student]
+FAILED tests/test_pricing.py::test_rounding_half_up[TC-40-round-exact-half]
+FAILED tests/test_pricing.py::test_rounding_half_up[TC-41-round-above-half]
+======================== 24 failed, 50 passed in 0.08s =========================
